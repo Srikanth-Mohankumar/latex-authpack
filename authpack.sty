@@ -1,0 +1,429 @@
+% authpack.sty - Advanced Author/Affiliation Management with LuaTeX
+% Version 1.1
+% Provides unified author/affiliation management with clickable markers,
+% ORCID integration, and flexible layout styles using Lua scripting.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{authpack}[2025/10/15 v1.1 Author/Affiliation Management (LuaTeX)]
+
+% Require LuaTeX
+\RequirePackage{ifluatex}
+\ifluatex\else
+  \PackageError{authpack}{LuaTeX required}{This package requires compilation with LuaLaTeX}
+\fi
+
+\RequirePackage{kvoptions}
+\RequirePackage{xparse}
+
+% Check if hyperref is loaded
+\newif\ifap@hyperref
+\AtBeginDocument{%
+  \@ifpackageloaded{hyperref}{\ap@hyperreftrue}{\ap@hyperreffalse}%
+}
+
+% Package options
+\SetupKeyvalOptions{
+  family=ap,
+  prefix=ap@
+}
+
+\DeclareStringOption[inline]{style}
+\DeclareStringOption[num]{marker}
+\DeclareBoolOption[true]{commasep}
+\DeclareBoolOption[true]{oxford}
+\DeclareBoolOption[true]{showand}
+\DeclareStringOption[icon]{orcid}
+\DeclareBoolOption[true]{orcidlink}
+\DeclareBoolOption[false]{backlink}
+
+\ProcessKeyvalOptions*
+
+% Initialize Lua module using luacode
+\RequirePackage{luacode}
+
+\begin{luacode*}
+  authpack = authpack or {}
+  
+  -- Data structures
+  authpack.affiliations = {}
+  authpack.authors = {}
+  authpack.author_list = {}
+  authpack.used_labels = {}
+  authpack.label_to_key = {}
+  authpack.marker_counter = 1
+  authpack.symbols = {"*", "†", "‡", "§", "¶", "||", "**", "††", "‡‡"}
+  
+  -- Options (will be set next)
+  authpack.options = {}
+  
+  -- Sanitize anchor name
+  function authpack.sanitize_anchor(key)
+    local sanitized = key:gsub("[^a-zA-Z0-9]", "-")
+    if not sanitized:match("^[a-zA-Z]") then
+      sanitized = "a" .. sanitized
+    end
+    return sanitized
+  end
+  
+  -- Generate automatic marker
+  function authpack.generate_marker()
+    local mode = authpack.options.marker
+    local counter = authpack.marker_counter
+    local label = ""
+    
+    if mode == "num" then
+      label = tostring(counter)
+    elseif mode == "alpha" then
+      label = string.char(64 + counter)
+    elseif mode == "symbol" then
+      local idx = ((counter - 1) % #authpack.symbols) + 1
+      label = authpack.symbols[idx]
+    else
+      label = tostring(counter)
+    end
+    
+    authpack.marker_counter = authpack.marker_counter + 1
+    return label
+  end
+  
+  -- Check and handle duplicate labels
+  function authpack.check_duplicate_label(label)
+    local suffix = ""
+    local attempt = 0
+    local test_label = label
+    
+    while authpack.used_labels[test_label] do
+      attempt = attempt + 1
+      test_label = label .. string.char(96 + attempt)
+    end
+    
+    if test_label ~= label then
+      texio.write_nl("Package authpack Warning: Duplicate label '" .. label .. "' detected, using '" .. test_label .. "'")
+    end
+    
+    return test_label
+  end
+  
+  -- Register affiliation
+  function authpack.register_affiliation(key, text, label, explicit_id)
+    local sanitized = authpack.sanitize_anchor(key)
+    local marker = label or authpack.generate_marker()
+    
+    -- Handle duplicates
+    marker = authpack.check_duplicate_label(marker)
+    
+    authpack.affiliations[key] = {
+      text = text,
+      label = marker,
+      anchor = explicit_id or sanitized,
+      explicit = (label ~= nil)
+    }
+    
+    authpack.used_labels[marker] = true
+    authpack.label_to_key[marker] = key
+  end
+  
+  -- Parse key-value options
+  function authpack.parse_kvlist(kvstr)
+    local result = {}
+    if not kvstr or kvstr == "" then return result end
+    
+    for item in kvstr:gmatch("[^,]+") do
+      local key, val = item:match("^%s*([^=]+)%s*=%s*(.*)%s*$")
+      if key and val then
+        result[key] = val
+      end
+    end
+    return result
+  end
+  
+  -- Register author
+  function authpack.register_author(key, name, options)
+    local opts = authpack.parse_kvlist(options)
+    
+    authpack.authors[key] = {
+      name = name,
+      affils = opts.affils or "",
+      email = opts.email or "",
+      orcid = opts.orcid or "",
+      marker = opts.marker or ""
+    }
+    
+    table.insert(authpack.author_list, key)
+  end
+  
+  -- Get affiliation markers for author
+  function authpack.get_author_markers(author_key)
+    local author = authpack.authors[author_key]
+    if not author or author.affils == "" then return "" end
+    
+    local markers = {}
+    for affil_key in author.affils:gmatch("[^,]+") do
+      affil_key = affil_key:match("^%s*(.-)%s*$")
+      local affil = authpack.affiliations[affil_key]
+      if affil then
+        table.insert(markers, affil.label)
+      end
+    end
+    
+    return table.concat(markers, ",")
+  end
+  
+  -- Render ORCID
+  function authpack.render_orcid(orcid_id)
+    if not orcid_id or orcid_id == "" then return "" end
+    
+    local mode = authpack.options.orcid
+    local link = authpack.options.orcidlink
+    local output = ""
+    
+    if mode == "icon" then
+      output = "\\orcidicon"
+    elseif mode == "text" then
+      output = "ORCID: " .. orcid_id
+    else
+      return ""
+    end
+    
+    if link == "true" then
+      output = "\\href{https://orcid.org/" .. orcid_id .. "}{" .. output .. "}"
+    end
+    
+    return "\\," .. output
+  end
+  
+  -- Render footnote style
+  function authpack.render_footnote()
+    local output = {}
+    local n_authors = #authpack.author_list
+    local use_comma = authpack.options.commasep == "true"
+    local use_oxford = authpack.options.oxford == "true"
+    local use_and = authpack.options.showand == "true"
+    
+    for i, key in ipairs(authpack.author_list) do
+      local author = authpack.authors[key]
+      local orcid = authpack.render_orcid(author.orcid)
+      
+      local author_str = author.name .. orcid
+      
+      -- Add footnotes for affiliations
+      if author.affils ~= "" then
+        for affil_key in author.affils:gmatch("[^,]+") do
+          affil_key = affil_key:match("^%s*(.-)%s*$")
+          local affil = authpack.affiliations[affil_key]
+          if affil then
+            author_str = author_str .. "\\footnote{" .. affil.text .. "}"
+          end
+        end
+      end
+      
+      -- Add separator
+      if i < n_authors then
+        if use_comma then
+          author_str = author_str .. ","
+        end
+        if i == n_authors - 1 and use_and then
+          if use_oxford and n_authors > 2 then
+            author_str = author_str .. " and"
+          elseif n_authors == 2 then
+            author_str = author_str .. " and"
+          else
+            author_str = author_str .. " and"
+          end
+        end
+      end
+      
+      table.insert(output, author_str)
+    end
+    
+    tex.print(table.concat(output, " "))
+  end
+  
+  -- Render inline style
+  function authpack.render_inline()
+    local output = {}
+    local n_authors = #authpack.author_list
+    local use_comma = authpack.options.commasep == "true"
+    local use_oxford = authpack.options.oxford == "true"
+    local use_and = authpack.options.showand == "true"
+    
+    for i, key in ipairs(authpack.author_list) do
+      local author = authpack.authors[key]
+      local markers = authpack.get_author_markers(key)
+      local orcid = authpack.render_orcid(author.orcid)
+      
+      local author_str = author.name
+      
+      if markers ~= "" then
+        local marker_links = {}
+        for marker in markers:gmatch("[^,]+") do
+          local affil_key = authpack.label_to_key[marker]
+          if affil_key then
+            local anchor = "ap@affil@" .. authpack.affiliations[affil_key].anchor
+            marker_links[#marker_links + 1] = "\\textsuperscript{\\hyperlink{" .. anchor .. "}{" .. marker .. "}}"
+          end
+        end
+        author_str = author_str .. table.concat(marker_links, ",")
+      end
+      
+      author_str = author_str .. orcid
+      
+      if i < n_authors then
+        if use_comma then
+          author_str = author_str .. ","
+        end
+        if i == n_authors - 1 and use_and then
+          if use_oxford and n_authors > 2 then
+            author_str = author_str .. " and"
+          elseif n_authors == 2 then
+            author_str = author_str .. " and"
+          else
+            author_str = author_str .. " and"
+          end
+        end
+      end
+      
+      table.insert(output, author_str)
+    end
+    
+    tex.print(table.concat(output, " "))
+    
+    -- Render affiliations
+    tex.print("")
+    tex.print("\\par\\vspace{0.5em}")
+    
+    for _, key in ipairs(authpack.author_list) do
+      local author = authpack.authors[key]
+      if author.affils ~= "" then
+        for affil_key in author.affils:gmatch("[^,]+") do
+          affil_key = affil_key:match("^%s*(.-)%s*$")
+          local affil = authpack.affiliations[affil_key]
+          if affil and not affil.rendered then
+            local anchor = "ap@affil@" .. affil.anchor
+            tex.print("\\hypertarget{" .. anchor .. "}{}")
+            tex.print("\\textsuperscript{" .. affil.label .. "}" .. affil.text)
+            
+            if authpack.options.backlink == "true" then
+              tex.print("\\,\\hyperlink{ap@authors}{↩}")
+            end
+            
+            tex.print("\\par")
+            affil.rendered = true
+          end
+        end
+      end
+    end
+  end
+  
+  -- Render block style
+  function authpack.render_block()
+    -- Group authors by affiliations
+    local affil_groups = {}
+    
+    for _, affil_key in pairs(authpack.label_to_key) do
+      affil_groups[affil_key] = {}
+    end
+    
+    for _, author_key in ipairs(authpack.author_list) do
+      local author = authpack.authors[author_key]
+      if author.affils ~= "" then
+        for affil_key in author.affils:gmatch("[^,]+") do
+          affil_key = affil_key:match("^%s*(.-)%s*$")
+          if affil_groups[affil_key] then
+            table.insert(affil_groups[affil_key], author_key)
+          end
+        end
+      end
+    end
+    
+    -- Render groups
+    for _, affil_key in pairs(authpack.label_to_key) do
+      local affil = authpack.affiliations[affil_key]
+      local authors = affil_groups[affil_key]
+      
+      if #authors > 0 then
+        local author_names = {}
+        for _, author_key in ipairs(authors) do
+          local author = authpack.authors[author_key]
+          local orcid = authpack.render_orcid(author.orcid)
+          table.insert(author_names, author.name .. orcid)
+        end
+        
+        tex.print(table.concat(author_names, " and "))
+        tex.print("\\par")
+        tex.print("\\hspace*{1em}" .. affil.text)
+        tex.print("\\par\\vspace{0.5em}")
+      end
+    end
+  end
+  
+  -- Main render function
+  function authpack.render()
+    local style = authpack.options.style
+    
+    tex.print("\\hypertarget{ap@authors}{}")
+    
+    if style == "inline" then
+      authpack.render_inline()
+    elseif style == "block" then
+      authpack.render_block()
+    elseif style == "footnote" then
+      authpack.render_footnote()
+    else
+      authpack.render_inline()
+    end
+  end
+\end{luacode*}
+
+% Set options
+\directlua{
+  authpack.options = {
+    style = "\ap@style",
+    marker = "\ap@marker",
+    commasep = "\ifap@commasep true\else false\fi",
+    oxford = "\ifap@oxford true\else false\fi",
+    showand = "\ifap@showand true\else false\fi",
+    orcid = "\ap@orcid",
+    orcidlink = "\ifap@orcidlink true\else false\fi",
+    backlink = "\ifap@backlink true\else false\fi"
+  }
+}
+
+% LaTeX commands
+
+% Define affiliation
+\NewDocumentCommand{\Affil}{o o m m}{%
+  \IfNoValueTF{#1}{%
+    \luaexec{authpack.register_affiliation(\luastring{#3}, \luastring{#4}, nil, nil)}%
+  }{%
+    \IfNoValueTF{#2}{%
+      \luaexec{authpack.register_affiliation(\luastring{#3}, \luastring{#4}, \luastring{#1}, nil)}%
+    }{%
+      \luaexec{authpack.register_affiliation(\luastring{#3}, \luastring{#4}, \luastring{#1}, \luastring{#2})}%
+    }%
+  }%
+}
+
+% Define author
+\NewDocumentCommand{\Author}{m m m}{%
+  \luaexec{authpack.register_author(\luastring{#1}, \luastring{#2}, \luastring{#3})}%
+}
+
+% Render authors and affiliations
+\newcommand{\PrintAuthors}{%
+  \directlua{authpack.render()}%
+}
+
+% ORCID icon helper
+\newcommand{\orcidicon}{%
+  \includegraphics[height=1em]{orcid.pdf}%
+}
+
+% Override \maketitle to include authors
+\let\ap@oldmaketitle\maketitle
+\renewcommand{\maketitle}{%
+  \ap@oldmaketitle
+  \PrintAuthors
+}
+
+\endinput
