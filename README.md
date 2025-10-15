@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Date:** 2025-10-15  
-**Author:** Advanced LaTeX Package  
+**Author:** Srikanth Mohankumar  
 **License:** LaTeX Project Public License
 
 ## Overview
