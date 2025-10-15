@@ -1,15 +1,15 @@
 % authpack.sty - Advanced Author/Affiliation Management with LuaTeX
-% Version 1.1
+% Version 1.2
 % Provides unified author/affiliation management with clickable markers,
 % ORCID integration, and flexible layout styles using Lua scripting.
 
-% **Version:** 1.0  
-% **Date:** 2025-10-15  
+% **Version:** 1.2  
+% **Date:** 2025-10-16  
 % **Author:** Srikanth Mohankumar  
 % **License:** LaTeX Project Public License
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{authpack}[2025/10/15 v1.1 Author/Affiliation Management (LuaTeX)]
+\ProvidesPackage{authpack}[2025/10/16 v1.2 Author/Affiliation Management (LuaTeX)]
 
 % Require LuaTeX
 \RequirePackage{ifluatex}
@@ -40,6 +40,7 @@
 \DeclareStringOption[icon]{orcid}
 \DeclareBoolOption[true]{orcidlink}
 \DeclareBoolOption[false]{backlink}
+\DeclareBoolOption[false]{debug}
 
 \ProcessKeyvalOptions*
 
@@ -51,6 +52,7 @@
   
   -- Data structures
   authpack.affiliations = {}
+  authpack.affiliation_order = {}
   authpack.authors = {}
   authpack.author_list = {}
   authpack.used_labels = {}
@@ -60,6 +62,13 @@
   
   -- Options (will be set next)
   authpack.options = {}
+  
+  -- Debug function
+  function authpack.debug(message)
+    if authpack.options.debug == "true" then
+      texio.write_nl("DEBUG: " .. message)
+    end
+  end
   
   -- Sanitize anchor name
   function authpack.sanitize_anchor(key)
@@ -111,8 +120,12 @@
   
   -- Register affiliation
   function authpack.register_affiliation(key, text, label, explicit_id)
+    authpack.debug("Registering affiliation: key=" .. key .. ", text=" .. text)
+    
     local sanitized = authpack.sanitize_anchor(key)
     local marker = label or authpack.generate_marker()
+    
+    authpack.debug("Generated marker: " .. marker)
     
     -- Handle duplicates
     marker = authpack.check_duplicate_label(marker)
@@ -124,8 +137,11 @@
       explicit = (label ~= nil)
     }
     
+    table.insert(authpack.affiliation_order, key)
     authpack.used_labels[marker] = true
     authpack.label_to_key[marker] = key
+    
+    authpack.debug("Affiliation registered: " .. key .. " -> marker " .. marker)
   end
   
   -- Parse key-value options
@@ -133,17 +149,74 @@
     local result = {}
     if not kvstr or kvstr == "" then return result end
     
-    for item in kvstr:gmatch("[^,]+") do
-      local key, val = item:match("^%s*([^=]+)%s*=%s*(.*)%s*$")
-      if key and val then
-        result[key] = val
+    authpack.debug("Parsing kvlist: " .. kvstr)
+    
+    local current_key = nil
+    local current_val = ""
+    local in_value = false
+    
+    local i = 1
+    while i <= #kvstr do
+      local char = kvstr:sub(i, i)
+      
+      if not in_value then
+        -- Looking for key=value pattern
+        local key, val, rest = kvstr:sub(i):match("^%s*([^=]+)%s*=%s*([^,=]+)(.*)")
+        if key then
+          current_key = key:match("^%s*(.-)%s*$")
+          current_val = val:match("^%s*(.-)%s*$")
+          
+          -- Check if there are more values (comma-separated within the value)
+          local j = i + #key + #val + 1
+          while j <= #kvstr and kvstr:sub(j, j):match("%s") do j = j + 1 end
+          if j <= #kvstr and kvstr:sub(j, j) == "=" then j = j + 1 end
+          while j <= #kvstr and kvstr:sub(j, j):match("%s") do j = j + 1 end
+          
+          -- Consume the value part which may contain commas
+          while j <= #kvstr do
+            local c = kvstr:sub(j, j)
+            if c == "," then
+              -- Check if next char is a key (contains =)
+              local ahead = kvstr:sub(j+1):match("^%s*([^,]+)")
+              if ahead and ahead:match("=") then
+                -- This comma separates key-value pairs
+                break
+              else
+                -- This comma is part of the value
+                current_val = current_val .. ","
+                j = j + 1
+                while j <= #kvstr and kvstr:sub(j, j):match("%s") do j = j + 1 end
+                local next_part = kvstr:sub(j):match("^([^,=]+)")
+                if next_part then
+                  current_val = current_val .. next_part:match("^%s*(.-)%s*$")
+                  j = j + #next_part
+                end
+              end
+            else
+              break
+            end
+          end
+          
+          result[current_key] = current_val
+          authpack.debug("  Parsed: " .. current_key .. " = " .. current_val)
+          
+          -- Find next key-value pair
+          i = kvstr:find(",", i)
+          if not i then break end
+          i = i + 1
+        else
+          i = i + 1
+        end
       end
     end
+    
     return result
   end
   
   -- Register author
   function authpack.register_author(key, name, options)
+    authpack.debug("Registering author: key=" .. key .. ", name=" .. name .. ", options=" .. options)
+    
     local opts = authpack.parse_kvlist(options)
     
     authpack.authors[key] = {
@@ -155,6 +228,8 @@
     }
     
     table.insert(authpack.author_list, key)
+    
+    authpack.debug("Author registered: " .. key .. " with affils=" .. (opts.affils or "none"))
   end
   
   -- Get affiliation markers for author
@@ -162,16 +237,39 @@
     local author = authpack.authors[author_key]
     if not author or author.affils == "" then return "" end
     
+    authpack.debug("Getting markers for author: " .. author_key .. " with affils=" .. author.affils)
+    
     local markers = {}
     for affil_key in author.affils:gmatch("[^,]+") do
       affil_key = affil_key:match("^%s*(.-)%s*$")
       local affil = authpack.affiliations[affil_key]
       if affil then
         table.insert(markers, affil.label)
+        authpack.debug("  Found marker: " .. affil.label .. " for affil: " .. affil_key)
+      else
+        authpack.debug("  WARNING: Affiliation not found: " .. affil_key)
       end
     end
     
-    return table.concat(markers, ",")
+    local result = table.concat(markers, ",")
+    authpack.debug("  Final markers: " .. result)
+    return result
+  end
+  
+  -- Get affiliation keys for author
+  function authpack.get_author_affil_keys(author_key)
+    local author = authpack.authors[author_key]
+    if not author or author.affils == "" then return {} end
+    
+    local keys = {}
+    for affil_key in author.affils:gmatch("[^,]+") do
+      affil_key = affil_key:match("^%s*(.-)%s*$")
+      if authpack.affiliations[affil_key] then
+        table.insert(keys, affil_key)
+      end
+    end
+    
+    return keys
   end
   
   -- Render ORCID
@@ -204,20 +302,41 @@
     local use_comma = authpack.options.commasep == "true"
     local use_oxford = authpack.options.oxford == "true"
     local use_and = authpack.options.showand == "true"
+    local footnote_added = {}
+    
+    authpack.debug("Rendering footnote style with " .. n_authors .. " authors")
     
     for i, key in ipairs(authpack.author_list) do
       local author = authpack.authors[key]
+      local markers = authpack.get_author_markers(key)
       local orcid = authpack.render_orcid(author.orcid)
       
-      local author_str = author.name .. orcid
+      local author_str = author.name
       
-      -- Add footnotes for affiliations
+      -- Add superscript markers with hyperlinks
+      if markers ~= "" then
+        local marker_links = {}
+        for marker in markers:gmatch("[^,]+") do
+          local affil_key = authpack.label_to_key[marker]
+          if affil_key then
+            local anchor = "ap@affil@" .. authpack.affiliations[affil_key].anchor
+            marker_links[#marker_links + 1] = "\\hyperlink{" .. anchor .. "}{" .. marker .. "}"
+          end
+        end
+        author_str = author_str .. "\\textsuperscript{" .. table.concat(marker_links, ",") .. "}"
+      end
+      
+      author_str = author_str .. orcid
+      
+      authpack.debug("Processing author: " .. author.name .. " with markers: " .. markers)
+      
+      -- Collect affiliations for footnotes (but don't add them yet)
       if author.affils ~= "" then
         for affil_key in author.affils:gmatch("[^,]+") do
           affil_key = affil_key:match("^%s*(.-)%s*$")
-          local affil = authpack.affiliations[affil_key]
-          if affil then
-            author_str = author_str .. "\\footnote{" .. affil.text .. "}"
+          if authpack.affiliations[affil_key] and not footnote_added[affil_key] then
+            footnote_added[affil_key] = true
+            authpack.debug("  Marked affil for footnote: " .. affil_key)
           end
         end
       end
@@ -242,6 +361,16 @@
     end
     
     tex.print(table.concat(output, " "))
+    
+    -- Now add footnotetext for each unique affiliation (in order)
+    for _, affil_key in ipairs(authpack.affiliation_order) do
+      if footnote_added[affil_key] then
+        local affil = authpack.affiliations[affil_key]
+        local anchor = "ap@affil@" .. affil.anchor
+        tex.print("\\footnotetext{\\hypertarget{" .. anchor .. "}{}\\textsuperscript{" .. affil.label .. "}" .. affil.text .. "}")
+        authpack.debug("Added footnotetext for: " .. affil_key .. " (marker: " .. affil.label .. ")")
+      end
+    end
   end
   
   -- Render inline style
@@ -265,10 +394,10 @@
           local affil_key = authpack.label_to_key[marker]
           if affil_key then
             local anchor = "ap@affil@" .. authpack.affiliations[affil_key].anchor
-            marker_links[#marker_links + 1] = "\\textsuperscript{\\hyperlink{" .. anchor .. "}{" .. marker .. "}}"
+            marker_links[#marker_links + 1] = "\\hyperlink{" .. anchor .. "}{" .. marker .. "}"
           end
         end
-        author_str = author_str .. table.concat(marker_links, ",")
+        author_str = author_str .. "\\textsuperscript{" .. table.concat(marker_links, ",") .. "}"
       end
       
       author_str = author_str .. orcid
@@ -296,69 +425,77 @@
     -- Render affiliations
     tex.print("")
     tex.print("\\par\\vspace{0.5em}")
+    tex.print("\\footnotesize")
     
-    for _, key in ipairs(authpack.author_list) do
-      local author = authpack.authors[key]
-      if author.affils ~= "" then
-        for affil_key in author.affils:gmatch("[^,]+") do
-          affil_key = affil_key:match("^%s*(.-)%s*$")
-          local affil = authpack.affiliations[affil_key]
-          if affil and not affil.rendered then
-            local anchor = "ap@affil@" .. affil.anchor
-            tex.print("\\hypertarget{" .. anchor .. "}{}")
-            tex.print("\\textsuperscript{" .. affil.label .. "}" .. affil.text)
-            
-            if authpack.options.backlink == "true" then
-              tex.print("\\,\\hyperlink{ap@authors}{↩}")
-            end
-            
-            tex.print("\\par")
-            affil.rendered = true
-          end
-        end
+    for _, affil_key in ipairs(authpack.affiliation_order) do
+      local affil = authpack.affiliations[affil_key]
+      local anchor = "ap@affil@" .. affil.anchor
+      tex.print("\\hypertarget{" .. anchor .. "}{}")
+      tex.print("\\textsuperscript{" .. affil.label .. "}" .. affil.text)
+      
+      if authpack.options.backlink == "true" then
+        tex.print("\\,\\hyperlink{ap@authors}{↩}")
       end
+      
+      tex.print("\\par")
     end
+    
+    tex.print("\\normalsize")
   end
   
   -- Render block style
   function authpack.render_block()
-    -- Group authors by affiliations
-    local affil_groups = {}
-    
-    for _, affil_key in pairs(authpack.label_to_key) do
-      affil_groups[affil_key] = {}
-    end
+    -- Group authors by their affiliation combinations
+    local groups = {}
+    local group_order = {}
     
     for _, author_key in ipairs(authpack.author_list) do
-      local author = authpack.authors[author_key]
-      if author.affils ~= "" then
-        for affil_key in author.affils:gmatch("[^,]+") do
-          affil_key = affil_key:match("^%s*(.-)%s*$")
-          if affil_groups[affil_key] then
-            table.insert(affil_groups[affil_key], author_key)
-          end
-        end
+      local affil_keys = authpack.get_author_affil_keys(author_key)
+      local group_key = table.concat(affil_keys, ",")
+      
+      if not groups[group_key] then
+        groups[group_key] = {
+          authors = {},
+          affils = affil_keys
+        }
+        table.insert(group_order, group_key)
       end
+      
+      table.insert(groups[group_key].authors, author_key)
     end
     
     -- Render groups
-    for _, affil_key in pairs(authpack.label_to_key) do
-      local affil = authpack.affiliations[affil_key]
-      local authors = affil_groups[affil_key]
+    for _, group_key in ipairs(group_order) do
+      local group = groups[group_key]
+      local author_names = {}
       
-      if #authors > 0 then
-        local author_names = {}
-        for _, author_key in ipairs(authors) do
-          local author = authpack.authors[author_key]
-          local orcid = authpack.render_orcid(author.orcid)
-          table.insert(author_names, author.name .. orcid)
-        end
+      for _, author_key in ipairs(group.authors) do
+        local author = authpack.authors[author_key]
+        local markers = authpack.get_author_markers(author_key)
+        local orcid = authpack.render_orcid(author.orcid)
         
-        tex.print(table.concat(author_names, " and "))
-        tex.print("\\par")
-        tex.print("\\hspace*{1em}" .. affil.text)
-        tex.print("\\par\\vspace{0.5em}")
+        local name = author.name
+        if markers ~= "" then
+          name = name .. "\\textsuperscript{" .. markers .. "}"
+        end
+        name = name .. orcid
+        
+        table.insert(author_names, name)
       end
+      
+      tex.print(table.concat(author_names, " and "))
+      tex.print("\\par")
+      tex.print("\\footnotesize")
+      
+      -- Print all affiliations for this group
+      for _, affil_key in ipairs(group.affils) do
+        local affil = authpack.affiliations[affil_key]
+        tex.print("\\textsuperscript{" .. affil.label .. "}" .. affil.text)
+        tex.print("\\par")
+      end
+      
+      tex.print("\\normalsize")
+      tex.print("\\vspace{0.5em}")
     end
   end
   
@@ -390,7 +527,8 @@
     showand = "\ifap@showand true\else false\fi",
     orcid = "\ap@orcid",
     orcidlink = "\ifap@orcidlink true\else false\fi",
-    backlink = "\ifap@backlink true\else false\fi"
+    backlink = "\ifap@backlink true\else false\fi",
+    debug = "\ifap@debug true\else false\fi"
   }
 }
 

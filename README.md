@@ -294,3 +294,42 @@ This package is released under the LaTeX Project Public License v1.3c or later.
 - ORCID integration with clickable links
 - Automatic duplicate label handling
 - Hyperlink support with optional backlinks
+
+expectations:
+Input:
+% Define affiliations
+\Affil{mit}{Massachusetts Institute of Technology}
+\Affil{harvard}{Harvard University}
+\Affil{oxford}{University of Oxford}
+
+% Define authors
+\Author{jdoe}{John Doe}{affils=mit, orcid=0000-0001-2345-6789}
+\Author{jsmith}{Jane Smith}{affils=mit,harvard}
+\Author{bjohnson}{Bob Johnson}{affils=oxford}
+
+
+Expected Output:
+1. Inline style:
+
+John Doe¹, Jane Smith¹,², and Bob Johnson³
+¹Massachusetts Institute of Technology
+²Harvard University
+³University of Oxford
+
+2. Block style:
+
+John Doe¹ and Jane Smith¹,²
+¹Massachusetts Institute of Technology
+²Harvard University
+
+3. Bob Johnson³
+³University of Oxford
+
+Footnote style:
+
+John Doe¹, Jane Smith¹,² and Bob Johnson³
+¹Massachusetts Institute of Technology
+²Harvard University
+³University of Oxford
+
+(with footnotes showing each affiliation)
