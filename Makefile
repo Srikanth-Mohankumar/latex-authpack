@@ -1,7 +1,7 @@
 # Makefile for testing authpack LaTeX package
 
 # Test files
-TESTS = test-basic test-inline test-block test-advanced test-options
+TESTS = test-basic test-inline test-block test-advanced test-options authpack-test-suite
 TEST_DIR = tests
 PDFS = $(addprefix $(TEST_DIR)/, $(addsuffix .pdf, $(TESTS)))
 
@@ -26,6 +26,7 @@ test-inline: $(TEST_DIR)/test-inline.pdf
 test-block: $(TEST_DIR)/test-block.pdf
 test-advanced: $(TEST_DIR)/test-advanced.pdf
 test-options: $(TEST_DIR)/test-options.pdf
+test-suite: $(TEST_DIR)/authpack-test-suite.pdf
 
 # Test target - compile all and check for errors
 test: all

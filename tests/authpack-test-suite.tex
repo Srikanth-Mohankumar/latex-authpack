@@ -1,0 +1,313 @@
+% authpack Test Suite - Comprehensive Testing File
+% Compile with: lualatex authpack-test-suite.tex
+
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue!60]{hyperref}
+
+% ============================================================================
+% CONFIGURATION SECTION - Uncomment ONE test configuration at a time
+% ============================================================================
+
+% Test 1: Inline Style with Numeric Markers (Default)
+%\usepackage[style=inline, marker=num, debug=false]{authpack}
+
+% Test 2: Inline Style with Alphabetic Markers
+% \usepackage[style=inline, marker=alpha, debug=false]{authpack}
+
+% Test 3: Inline Style with Symbol Markers
+% \usepackage[style=inline, marker=symbol, debug=false]{authpack}
+
+% Test 4: Inline Style with Backlinks
+% \usepackage[style=inline, marker=num, backlink=true, debug=false]{authpack}
+
+% Test 5: Block Style with Numeric Markers
+% \usepackage[style=block, marker=num, debug=false]{authpack}
+
+% Test 6: Block Style with Alphabetic Markers
+%\usepackage[style=block, marker=alpha, debug=false]{authpack}
+
+% Test 7: Footnote Style with Numeric Markers
+% \usepackage[style=footnote, marker=num, debug=false]{authpack}
+
+% Test 8: Footnote Style with Symbol Markers
+% \usepackage[style=footnote, marker=symbol, debug=false]{authpack}
+
+% Test 9: Custom Markers Test
+%\usepackage[style=inline, debug=false]{authpack}
+
+% Test 10: ORCID Icon Display (requires orcid.pdf)
+%\usepackage[style=inline, marker=num, orcid=icon, orcidlink=true, debug=false]{authpack}
+
+% Test 11: ORCID Text Display
+%\usepackage[style=inline, marker=num, orcid=text, orcidlink=true, debug=false]{authpack}
+
+% Test 12: No ORCID Display
+%\usepackage[style=inline, marker=num, orcid=none, debug=false]{authpack}
+
+% Test 13: No Commas Between Authors
+%\usepackage[style=inline, marker=num, commasep=false, debug=false]{authpack}
+
+% Test 14: No Oxford Comma
+%\usepackage[style=inline, marker=num, oxford=false, debug=false]{authpack}
+
+% Test 15: No "and" Before Last Author
+%\usepackage[style=inline, marker=num, showand=false, debug=false]{authpack}
+
+% Test 16: Debug Mode Enabled
+%\usepackage[style=inline, marker=num, debug=true]{authpack}
+
+% Test 17: Complex Multi-Affiliation Test
+% \usepackage[style=inline, marker=num, debug=false]{authpack}
+
+% Test 18: Block Style with Complex Affiliations
+% \usepackage[style=block, marker=num, debug=false]{authpack}
+
+% Test 19: Footnote Style with Complex Affiliations
+% \usepackage[style=footnote, marker=num, debug=false]{authpack}
+
+% Test 20: Maximum Affiliations Stress Test
+\usepackage[style=inline, marker=num, debug=false]{authpack}
+
+% ============================================================================
+
+\begin{document}
+
+% ============================================================================
+% HELPER COMMANDS
+% ============================================================================
+
+\newcommand{\testsection}[1]{%
+  \vspace{2em}
+  {\large\color{blue}\textbf{#1}}
+  \par\vspace{0.5em}
+}
+
+\newcommand{\testdesc}[1]{%
+  {\small\color{gray}\textit{#1}}
+  \par\vspace{0.5em}
+}
+
+% ============================================================================
+% TEST CASES - Comment/Uncomment based on active test above
+% ============================================================================
+
+% TEST 1-8, 10-16: Basic Multi-Affiliation Test
+% ----------------------------------------------------------------------------
+% \testsection{Test: Basic Multi-Affiliation}
+% \testdesc{Three authors with overlapping affiliations. Jane Smith has two affiliations.}
+
+% \Affil{mit}{Massachusetts Institute of Technology}
+% \Affil{harvard}{Harvard University}
+% \Affil{oxford}{University of Oxford}
+
+% \Author{jdoe}{John Doe}{affils=mit, orcid=0000-0001-2345-6789}
+% \Author{jsmith}{Jane Smith}{affils=mit,harvard}
+% \Author{bjohnson}{Bob Johnson}{affils=oxford}
+
+% \title{Basic Multi-Affiliation Test}
+% \author{} % Leave empty, will be filled by authpack
+% \date{\today}
+% \maketitle
+
+% \section{Introduction}
+% This is a test document to verify the authpack package functionality.
+
+% \newpage
+
+% TEST 9: Custom Markers Test
+% ----------------------------------------------------------------------------
+% \testsection{Test: Custom Markers}
+% \testdesc{Using custom markers instead of automatic numbering.}
+
+% \Affil[1]{primary}{Primary Institution}
+% \Affil[2]{secondary}{Secondary Institution}
+% \Affil[3]{tertiary}{Tertiary Institution}
+
+% \Author{auth1}{Author One}{affils=primary,secondary}
+% \Author{auth2}{Author Two}{affils=secondary,tertiary}
+% \Author{auth3}{Author Three}{affils=primary}
+
+% \title{Custom Markers Test}
+% \author{}
+% \date{\today}
+% \maketitle
+
+% \section{Introduction}
+% Testing custom affiliation markers.
+
+% TEST 17: Complex Multi-Affiliation Test
+% ----------------------------------------------------------------------------
+% \testsection{Test: Complex Multi-Affiliation Patterns}
+% \testdesc{Five authors with various affiliation combinations.}
+
+% \Affil{stanford}{Stanford University}
+% \Affil{berkeley}{UC Berkeley}
+% \Affil{caltech}{California Institute of Technology}
+% \Affil{ucla}{University of California, Los Angeles}
+
+% \Author{alice}{Alice Anderson}{affils=stanford, orcid=0000-0001-1111-1111}
+% \Author{bob}{Bob Brown}{affils=stanford,berkeley}
+% \Author{carol}{Carol Chen}{affils=berkeley,caltech,ucla}
+% \Author{david}{David Davis}{affils=caltech}
+% \Author{eve}{Eve Evans}{affils=stanford,ucla}
+
+% \title{Complex Multi-Affiliation Test}
+% \author{}
+% \date{\today}
+% \maketitle
+
+% \section{Introduction}
+% Testing complex patterns with multiple authors sharing various affiliations.
+
+% TEST 18: Block Style Complex Test
+% ----------------------------------------------------------------------------
+% \testsection{Test: Block Style with Complex Affiliations}
+% \testdesc{Testing how block style groups authors with multiple affiliations.}
+
+% \Affil{uni1}{First University}
+% \Affil{uni2}{Second University}
+% \Affil{uni3}{Third University}
+% \Affil{uni4}{Fourth University}
+
+% \Author{a1}{Author A}{affils=uni1,uni2}
+% \Author{a2}{Author B}{affils=uni1,uni2}
+% \Author{a3}{Author C}{affils=uni2,uni3}
+% \Author{a4}{Author D}{affils=uni4}
+% \Author{a5}{Author E}{affils=uni1,uni3,uni4}
+
+% \title{Block Style Complex Test}
+% \author{}
+% \date{\today}
+% \maketitle
+
+% \section{Introduction}
+% Testing block style grouping with various affiliation patterns.
+
+% TEST 19: Footnote Style Complex Test
+% ----------------------------------------------------------------------------
+% \testsection{Test: Footnote Style with Multiple Affiliations}
+% \testdesc{Testing footnote rendering with clickable markers.}
+
+% \Affil{inst1}{Institute of Advanced Studies}
+% \Affil{inst2}{Center for Research Excellence}
+% \Affil{inst3}{Laboratory of Innovation}
+% \Affil{inst4}{Department of Science}
+
+% \Author{researcher1}{First Researcher}{affils=inst1,inst2, orcid=0000-0002-2222-2222}
+% \Author{researcher2}{Second Researcher}{affils=inst2,inst3}
+% \Author{researcher3}{Third Researcher}{affils=inst3,inst4}
+% \Author{researcher4}{Fourth Researcher}{affils=inst1,inst4}
+
+% \title{Footnote Style Complex Test}
+% \author{}
+% \date{\today}
+% \maketitle
+
+% \section{Introduction}
+% Testing footnote style with multiple affiliations and clickable markers.
+% Check that footnotes appear at the bottom of this page.
+
+% TEST 20: Maximum Affiliations Stress Test
+% ----------------------------------------------------------------------------
+\testsection{Test: Maximum Affiliations Stress Test}
+\testdesc{Single author with six affiliations to test marker display.}
+
+\Affil{aff1}{First Affiliation}
+\Affil{aff2}{Second Affiliation}
+\Affil{aff3}{Third Affiliation}
+\Affil{aff4}{Fourth Affiliation}
+\Affil{aff5}{Fifth Affiliation}
+\Affil{aff6}{Sixth Affiliation}
+
+\Author{poly}{Polymath Author}{affils=aff1,aff2,aff3,aff4,aff5,aff6, orcid=0000-0003-3333-3333}
+
+\title{Maximum Affiliations Stress Test}
+\author{}
+\date{\today}
+\maketitle
+
+\section{Introduction}
+Testing display of many affiliations for a single author.
+
+% ============================================================================
+% AUTOMATED TEST SUMMARY PAGE
+% ============================================================================
+
+\newpage
+\section*{Test Configuration Summary}
+
+\subsection*{Available Tests}
+
+\begin{enumerate}
+\item \textbf{Inline + Numeric} - Default inline layout with numeric markers (1, 2, 3...)
+\item \textbf{Inline + Alpha} - Inline layout with alphabetic markers (A, B, C...)
+\item \textbf{Inline + Symbol} - Inline layout with symbolic markers (*, †, ‡...)
+\item \textbf{Inline + Backlinks} - Inline with return links from affiliations
+\item \textbf{Block + Numeric} - Block layout grouped by affiliations
+\item \textbf{Block + Alpha} - Block layout with alphabetic markers
+\item \textbf{Footnote + Numeric} - Traditional footnote style at page bottom
+\item \textbf{Footnote + Symbol} - Footnote style with symbolic markers
+\item \textbf{Custom Markers} - User-defined markers (*, †, ‡)
+\item \textbf{ORCID Icon} - Display ORCID icon (requires orcid.pdf)
+\item \textbf{ORCID Text} - Display ORCID as text
+\item \textbf{ORCID None} - Hide ORCID information
+\item \textbf{No Commas} - Authors without commas between names
+\item \textbf{No Oxford Comma} - Disable Oxford comma before "and"
+\item \textbf{No "and"} - Don't show "and" before last author
+\item \textbf{Debug Mode} - Enable console debug output
+\item \textbf{Complex Multi} - Five authors with complex patterns
+\item \textbf{Block Complex} - Block style with complex grouping
+\item \textbf{Footnote Complex} - Footnote style with multiple authors
+\item \textbf{Stress Test} - Single author with six affiliations
+\end{enumerate}
+
+\subsection*{How to Use This Test File}
+
+\begin{enumerate}
+\item Open \texttt{authpack-test-suite.tex} in your editor
+\item In the CONFIGURATION SECTION, uncomment ONE test at a time
+\item Comment out all other tests
+\item Compile with: \texttt{lualatex authpack-test-suite.tex}
+\item Review the output PDF
+\item Check console/log for debug messages (if debug=true)
+\item Repeat for each test configuration
+\end{enumerate}
+
+\subsection*{What to Check}
+
+\begin{itemize}
+\item \textbf{Author names} - Properly formatted with correct separators
+\item \textbf{Markers} - Correct style (numeric/alpha/symbol) and clickable
+\item \textbf{Multiple affiliations} - Authors with multiple affiliations show all markers (e.g., ¹,²)
+\item \textbf{Affiliation text} - All affiliations listed correctly
+\item \textbf{Hyperlinks} - Markers link to affiliations (test by clicking)
+\item \textbf{ORCID} - Displayed correctly (icon/text/none) and clickable
+\item \textbf{Footnotes} - Appear at page bottom (footnote style only)
+\item \textbf{Grouping} - Proper author grouping (block style only)
+\item \textbf{Debug output} - Console shows detailed processing (debug mode)
+\end{itemize}
+
+\subsection*{Expected Outputs}
+
+\subsubsection*{Inline Style}
+\texttt{John Doe¹, Jane Smith¹,² and Bob Johnson³}\\
+\texttt{¹Massachusetts Institute of Technology}\\
+\texttt{²Harvard University}\\
+\texttt{³University of Oxford}
+
+\subsubsection*{Block Style}
+\texttt{John Doe¹ and Jane Smith¹,²}\\
+\texttt{¹Massachusetts Institute of Technology}\\
+\texttt{²Harvard University}\\
+\\
+\texttt{Bob Johnson³}\\
+\texttt{³University of Oxford}
+
+\subsubsection*{Footnote Style}
+\texttt{John Doe¹, Jane Smith¹,² and Bob Johnson³}\\
+(with footnotes at page bottom)
+
+\end{document}
