@@ -1,0 +1,856 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \setmainfont[]{TeX Gyre Pagella}
+  \setsansfont[]{TeX Gyre Heros}
+  \setmonofont[]{Inconsolata}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs}
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\author{}
+\date{}
+
+\begin{document}
+
+\hypertarget{authpack---advanced-authoraffiliation-management-for-lualatex}{%
+\section{authpack - Advanced Author/Affiliation Management for
+LuaLaTeX}\label{authpack---advanced-authoraffiliation-management-for-lualatex}}
+
+\textbf{Version:} 1.2\\
+\textbf{Date:} 2025-10-16\\
+\textbf{Author:} Srikanth Mohankumar\\
+\textbf{License:} LaTeX Project Public License
+
+\hypertarget{overview}{%
+\subsection{Overview}\label{overview}}
+
+\texttt{authpack} is a sophisticated LaTeX package for managing authors
+and their affiliations in academic documents. It provides clickable
+markers, ORCID integration, and flexible layout styles using Lua
+scripting for maximum flexibility and performance.
+
+\hypertarget{requirements}{%
+\subsection{Requirements}\label{requirements}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{LuaLaTeX} (required - will not work with pdfLaTeX or XeLaTeX)
+\item
+  \texttt{hyperref} package (optional, for clickable links)
+\item
+  \texttt{graphicx} package (for ORCID icon display)
+\item
+  ORCID icon file: \texttt{orcid.pdf} (optional, for icon display)
+\end{itemize}
+
+\hypertarget{installation}{%
+\subsection{Installation}\label{installation}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Place \texttt{authpack.sty} in your LaTeX project directory or in your
+  local texmf tree
+\item
+  Optionally place \texttt{orcid.pdf} icon in the same directory
+\item
+  Compile your document with \texttt{lualatex}
+\end{enumerate}
+
+\hypertarget{basic-usage}{%
+\subsection{Basic Usage}\label{basic-usage}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}documentclass}\NormalTok{\{}\ExtensionTok{article}\NormalTok{\}}
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{\{}\ExtensionTok{hyperref}\NormalTok{\}}
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{\{}\ExtensionTok{authpack}\NormalTok{\}}
+
+\KeywordTok{\textbackslash{}begin}\NormalTok{\{}\ExtensionTok{document}\NormalTok{\}}
+
+\CommentTok{\% Define affiliations}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{uni1\}\{University of Example\}}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{uni2\}\{Institute of Technology\}}
+
+\CommentTok{\% Define authors}
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{author1\}\{John Doe\}\{affils=uni1, orcid=0000{-}0001{-}2345{-}6789\}}
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{author2\}\{Jane Smith\}\{affils=uni2\}}
+
+\FunctionTok{\textbackslash{}title}\NormalTok{\{My Research Paper\}}
+\FunctionTok{\textbackslash{}maketitle}
+
+\KeywordTok{\textbackslash{}end}\NormalTok{\{}\ExtensionTok{document}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{package-options}{%
+\subsection{Package Options}\label{package-options}}
+
+Load the package with options:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[style=inline, marker=num, orcid=icon, debug=false]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{available-options}{%
+\subsubsection{Available Options}\label{available-options}}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule
+\begin{minipage}[b]{0.19\columnwidth}\raggedright
+Option\strut
+\end{minipage} & \begin{minipage}[b]{0.19\columnwidth}\raggedright
+Values\strut
+\end{minipage} & \begin{minipage}[b]{0.21\columnwidth}\raggedright
+Default\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Description\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{style}\strut
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{inline}, \texttt{block}, \texttt{footnote}\strut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+\texttt{inline}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Layout style for authors/affiliations\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{marker}\strut
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{num}, \texttt{alpha}, \texttt{symbol}\strut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+\texttt{num}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Marker style for affiliations\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{commasep}\strut
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{true}, \texttt{false}\strut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+\texttt{true}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Use commas between author names\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{oxford}\strut
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{true}, \texttt{false}\strut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+\texttt{true}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Use Oxford comma before ``and''\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{showand}\strut
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{true}, \texttt{false}\strut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+\texttt{true}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Show ``and'' before last author\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{orcid}\strut
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{icon}, \texttt{text}, \texttt{none}\strut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+\texttt{icon}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+ORCID display style\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{orcidlink}\strut
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{true}, \texttt{false}\strut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+\texttt{true}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Make ORCID clickable\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{backlink}\strut
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{true}, \texttt{false}\strut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+\texttt{false}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Add return links from affiliations (inline style only)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{debug}\strut
+\end{minipage} & \begin{minipage}[t]{0.19\columnwidth}\raggedright
+\texttt{true}, \texttt{false}\strut
+\end{minipage} & \begin{minipage}[t]{0.21\columnwidth}\raggedright
+\texttt{false}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Enable debug output to console/log\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{commands}{%
+\subsection{Commands}\label{commands}}
+
+\hypertarget{affillabelidkeytext}{%
+\subsubsection{\texorpdfstring{\texttt{\textbackslash{}Affil{[}label{]}{[}id{]}\{key\}\{text\}}}{\textbackslash Affil{[}label{]}{[}id{]}\{key\}\{text\}}}\label{affillabelidkeytext}}
+
+Defines an affiliation.
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{label} (optional): Custom marker label (e.g., \texttt{*},
+  \texttt{a}, \texttt{1})
+\item
+  \texttt{id} (optional): Custom HTML anchor ID for hyperlinks
+\item
+  \texttt{key} (required): Unique identifier for this affiliation
+\item
+  \texttt{text} (required): Affiliation text to display
+\end{itemize}
+
+\textbf{Examples:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{mit\}\{Massachusetts Institute of Technology\}}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{[*]\{harvard\}\{Harvard University\}}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{[A][custom{-}id]\{oxford\}\{University of Oxford\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{authorkeynameoptions}{%
+\subsubsection{\texorpdfstring{\texttt{\textbackslash{}Author\{key\}\{name\}\{options\}}}{\textbackslash Author\{key\}\{name\}\{options\}}}\label{authorkeynameoptions}}
+
+Defines an author with optional metadata.
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{key} (required): Unique identifier for this author
+\item
+  \texttt{name} (required): Author's full name
+\item
+  \texttt{options} (required): Comma-separated key=value pairs
+\end{itemize}
+
+\textbf{Options:}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{affils}: Comma-separated list of affiliation keys (supports
+  multiple affiliations)
+\item
+  \texttt{email}: Email address
+\item
+  \texttt{orcid}: ORCID identifier (format: 0000-0000-0000-0000)
+\item
+  \texttt{marker}: Custom marker (rarely needed)
+\end{itemize}
+
+\textbf{Examples:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{jdoe\}\{John Doe\}\{affils=mit, orcid=0000{-}0001{-}2345{-}6789\}}
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{jsmith\}\{Jane Smith\}\{affils=mit,harvard, email=jane@example.com\}}
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{bob\}\{Bob Johnson\}\{affils=oxford\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{printauthors}{%
+\subsubsection{\texorpdfstring{\texttt{\textbackslash{}PrintAuthors}}{\textbackslash PrintAuthors}}\label{printauthors}}
+
+Manually renders the author and affiliation block. Usually not needed as
+\texttt{\textbackslash{}maketitle} automatically calls this.
+
+\hypertarget{styles}{%
+\subsection{Styles}\label{styles}}
+
+\hypertarget{inline-style-default}{%
+\subsubsection{Inline Style (default)}\label{inline-style-default}}
+
+Authors listed in a single paragraph with superscript affiliation
+markers, followed by affiliation list.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[style=inline]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Output format:}
+
+\begin{verbatim}
+John Doe¹, Jane Smith¹,² and Bob Johnson³
+
+¹Massachusetts Institute of Technology
+²Harvard University
+³University of Oxford
+\end{verbatim}
+
+\textbf{Features:} - Authors in single line with clickable superscript
+markers - Affiliations listed below with hyperlink targets - Optional
+backlinks from affiliations to author list - Handles multiple
+affiliations per author
+
+\hypertarget{block-style}{%
+\subsubsection{Block Style}\label{block-style}}
+
+Authors grouped by their affiliation combinations with affiliation text
+below each group.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[style=block]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Output format:}
+
+\begin{verbatim}
+John Doe¹ and Jane Smith¹,²
+¹Massachusetts Institute of Technology
+²Harvard University
+
+Bob Johnson³
+³University of Oxford
+\end{verbatim}
+
+\textbf{Features:} - Authors grouped by shared affiliations - Each group
+shows relevant affiliations immediately below - Ideal for documents with
+clear institutional groupings
+
+\hypertarget{footnote-style}{%
+\subsubsection{Footnote Style}\label{footnote-style}}
+
+Authors listed with superscript markers, affiliations rendered as LaTeX
+footnotes at page bottom.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[style=footnote]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Output format:}
+
+\begin{verbatim}
+John Doe¹, Jane Smith¹,² and Bob Johnson³
+\end{verbatim}
+
+With footnotes at bottom of page: - ¹ Massachusetts Institute of
+Technology - ² Harvard University - ³ University of Oxford
+
+\textbf{Features:} - Uses \texttt{\textbackslash{}footnotetext} for
+proper footnote placement - Clickable superscript markers link to
+footnotes - Each affiliation appears exactly once - Ideal for
+traditional academic paper format
+
+\hypertarget{marker-styles}{%
+\subsection{Marker Styles}\label{marker-styles}}
+
+\hypertarget{numeric-default}{%
+\subsubsection{Numeric (default)}\label{numeric-default}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[marker=num]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Produces: ¹, ², ³, 4, 5\ldots{}
+
+\hypertarget{alphabetic}{%
+\subsubsection{Alphabetic}\label{alphabetic}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[marker=alpha]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Produces: A, B, C, D, E\ldots{}
+
+\hypertarget{symbolic}{%
+\subsubsection{Symbolic}\label{symbolic}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[marker=symbol]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Produces: *, †, ‡, §, ¶, \textbar\textbar, **, ††, ‡‡
+
+\hypertarget{orcid-integration}{%
+\subsection{ORCID Integration}\label{orcid-integration}}
+
+\hypertarget{icon-display-default}{%
+\subsubsection{Icon Display (default)}\label{icon-display-default}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[orcid=icon]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Displays the ORCID icon next to author names (requires
+\texttt{orcid.pdf}).
+
+\hypertarget{text-display}{%
+\subsubsection{Text Display}\label{text-display}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[orcid=text]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Displays ``ORCID: 0000-0000-0000-0000'' next to author names.
+
+\hypertarget{no-display}{%
+\subsubsection{No Display}\label{no-display}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[orcid=none]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Hides ORCID information.
+
+\hypertarget{clickable-orcid-links}{%
+\subsubsection{Clickable ORCID Links}\label{clickable-orcid-links}}
+
+By default, ORCID identifiers are clickable and link to
+\texttt{https://orcid.org/{[}ID{]}}. Disable with:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[orcidlink=false]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{advanced-features}{%
+\subsection{Advanced Features}\label{advanced-features}}
+
+\hypertarget{multiple-affiliations-per-author}{%
+\subsubsection{Multiple Affiliations per
+Author}\label{multiple-affiliations-per-author}}
+
+Authors can have multiple affiliations with proper marker display:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{uni1\}\{University A\}}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{uni2\}\{University B\}}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{uni3\}\{University C\}}
+
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{jdoe\}\{John Doe\}\{affils=uni1,uni2,uni3\}}
+\CommentTok{\% Displays as: John Doe¹,²,³}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Important:} No spaces in the affiliation list value: - ✓
+Correct: \texttt{affils=uni1,uni2,uni3} - ✗ Wrong:
+\texttt{affils=uni1,\ uni2,\ uni3} (spaces will cause parsing issues)
+
+\hypertarget{custom-markers}{%
+\subsubsection{Custom Markers}\label{custom-markers}}
+
+Override automatic marker generation:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\textbackslash{}Affil}\NormalTok{[*]\{primary\}\{Primary Institution\}}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{[†]\{secondary\}\{Secondary Institution\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{clickable-links}{%
+\subsubsection{Clickable Links}\label{clickable-links}}
+
+When \texttt{hyperref} is loaded, affiliation markers are clickable and
+link to the affiliation text.
+
+\textbf{Inline style:} Use \texttt{backlink=true} to add return links
+from affiliations:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[style=inline, backlink=true]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Footnote style:} Superscript markers are automatically clickable
+and link to footnotes at page bottom.
+
+\hypertarget{duplicate-label-handling}{%
+\subsubsection{Duplicate Label
+Handling}\label{duplicate-label-handling}}
+
+If duplicate markers are detected, the package automatically adds
+suffixes (a, b, c, etc.) and issues a warning.
+
+\hypertarget{debug-mode}{%
+\subsubsection{Debug Mode}\label{debug-mode}}
+
+Enable comprehensive debug output to trace package behavior:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[debug=true]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Debug output includes: - Affiliation registration with keys and markers
+- Author registration with affiliation lists - Marker generation and
+assignment - Complete data dump before rendering - Step-by-step
+rendering process
+
+Debug messages appear in console output and \texttt{.log} file.
+
+\hypertarget{complete-examples}{%
+\subsection{Complete Examples}\label{complete-examples}}
+
+\hypertarget{example-1-basic-multi-affiliation}{%
+\subsubsection{Example 1: Basic
+Multi-Affiliation}\label{example-1-basic-multi-affiliation}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}documentclass}\NormalTok{\{}\ExtensionTok{article}\NormalTok{\}}
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{\{}\ExtensionTok{hyperref}\NormalTok{\}}
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[style=inline]\{}\ExtensionTok{authpack}\NormalTok{\}}
+
+\KeywordTok{\textbackslash{}begin}\NormalTok{\{}\ExtensionTok{document}\NormalTok{\}}
+
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{mit\}\{Massachusetts Institute of Technology\}}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{harvard\}\{Harvard University\}}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{oxford\}\{University of Oxford\}}
+
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{jdoe\}\{John Doe\}\{affils=mit, orcid=0000{-}0001{-}2345{-}6789\}}
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{jsmith\}\{Jane Smith\}\{affils=mit,harvard\}}
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{bjohnson\}\{Bob Johnson\}\{affils=oxford\}}
+
+\FunctionTok{\textbackslash{}title}\NormalTok{\{My Research Paper\}}
+\FunctionTok{\textbackslash{}maketitle}
+
+\KeywordTok{\textbackslash{}end}\NormalTok{\{}\ExtensionTok{document}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{example-2-block-style-with-custom-markers}{%
+\subsubsection{Example 2: Block Style with Custom
+Markers}\label{example-2-block-style-with-custom-markers}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}documentclass}\NormalTok{\{}\ExtensionTok{article}\NormalTok{\}}
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{\{}\ExtensionTok{hyperref}\NormalTok{\}}
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[style=block, marker=alpha]\{}\ExtensionTok{authpack}\NormalTok{\}}
+
+\KeywordTok{\textbackslash{}begin}\NormalTok{\{}\ExtensionTok{document}\NormalTok{\}}
+
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{inst1\}\{First Institution\}}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{inst2\}\{Second Institution\}}
+
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{auth1\}\{Author One\}\{affils=inst1,inst2\}}
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{auth2\}\{Author Two\}\{affils=inst2\}}
+
+\FunctionTok{\textbackslash{}title}\NormalTok{\{Collaborative Research\}}
+\FunctionTok{\textbackslash{}maketitle}
+
+\KeywordTok{\textbackslash{}end}\NormalTok{\{}\ExtensionTok{document}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{example-3-footnote-style-for-traditional-papers}{%
+\subsubsection{Example 3: Footnote Style for Traditional
+Papers}\label{example-3-footnote-style-for-traditional-papers}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}documentclass}\NormalTok{\{}\ExtensionTok{article}\NormalTok{\}}
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{\{}\ExtensionTok{hyperref}\NormalTok{\}}
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[style=footnote, marker=num]\{}\ExtensionTok{authpack}\NormalTok{\}}
+
+\KeywordTok{\textbackslash{}begin}\NormalTok{\{}\ExtensionTok{document}\NormalTok{\}}
+
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{univ\}\{University Name\}}
+\FunctionTok{\textbackslash{}Affil}\NormalTok{\{lab\}\{Laboratory Name\}}
+
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{lead\}\{Lead Author\}\{affils=univ,lab, orcid=0000{-}0001{-}2345{-}6789\}}
+\FunctionTok{\textbackslash{}Author}\NormalTok{\{second\}\{Second Author\}\{affils=univ\}}
+
+\FunctionTok{\textbackslash{}title}\NormalTok{\{Traditional Academic Paper\}}
+\FunctionTok{\textbackslash{}maketitle}
+
+\KeywordTok{\textbackslash{}end}\NormalTok{\{}\ExtensionTok{document}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{troubleshooting}{%
+\subsection{Troubleshooting}\label{troubleshooting}}
+
+\hypertarget{luatex-required-error}{%
+\subsubsection{``LuaTeX required'' error}\label{luatex-required-error}}
+
+\textbf{Solution:} Compile with \texttt{lualatex} instead of
+\texttt{pdflatex}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{lualatex}\NormalTok{ mydocument.tex}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{orcid-icon-not-displaying}{%
+\subsubsection{ORCID icon not
+displaying}\label{orcid-icon-not-displaying}}
+
+\textbf{Solution:} 1. Download the ORCID icon from
+https://orcid.org/trademark-and-id-display-guidelines 2. Save as
+\texttt{orcid.pdf} in your document directory 3. Or use
+\texttt{orcid=text} option instead
+
+\hypertarget{markers-not-clickable}{%
+\subsubsection{Markers not clickable}\label{markers-not-clickable}}
+
+\textbf{Solution:} Load \texttt{hyperref} package before
+\texttt{authpack}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{\{}\ExtensionTok{hyperref}\NormalTok{\}}
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{multiple-affiliations-not-showing-all-markers}{%
+\subsubsection{Multiple affiliations not showing all
+markers}\label{multiple-affiliations-not-showing-all-markers}}
+
+\textbf{Problem:} Only first affiliation appears for authors with
+multiple affiliations.
+
+\textbf{Solution:} Ensure no spaces in affiliation list: - ✓ Use:
+\texttt{affils=mit,harvard,oxford} - ✗ Don't use:
+\texttt{affils=mit,\ harvard,\ oxford}
+
+\hypertarget{duplicate-label-warnings}{%
+\subsubsection{Duplicate label
+warnings}\label{duplicate-label-warnings}}
+
+\textbf{Solution:} Use explicit labels with
+\texttt{\textbackslash{}Affil{[}label{]}} to control marker assignment.
+
+\hypertarget{footnotes-not-appearing-at-page-bottom}{%
+\subsubsection{Footnotes not appearing at page
+bottom}\label{footnotes-not-appearing-at-page-bottom}}
+
+\textbf{Solution:} Ensure you're using \texttt{style=footnote}. The
+package uses \texttt{\textbackslash{}footnotetext} which requires proper
+page layout. If footnotes still don't appear, check for conflicting
+packages.
+
+\hypertarget{debug-output-needed}{%
+\subsubsection{Debug output needed}\label{debug-output-needed}}
+
+\textbf{Solution:} Enable debug mode to see detailed processing:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{\textbackslash{}usepackage}\NormalTok{[debug=true]\{}\ExtensionTok{authpack}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Check console output and \texttt{.log} file for debug messages.
+
+\hypertarget{limitations}{%
+\subsection{Limitations}\label{limitations}}
+
+\begin{itemize}
+\tightlist
+\item
+  Requires LuaLaTeX (not compatible with pdfLaTeX or XeLaTeX)
+\item
+  ORCID icon requires external \texttt{orcid.pdf} file
+\item
+  Maximum of \textasciitilde81 symbols in symbol mode (9 base symbols ×
+  9 repetitions)
+\item
+  Affiliation lists in \texttt{\textbackslash{}Author} command must not
+  contain spaces around commas
+\item
+  \texttt{backlink} option only works with \texttt{inline} style
+\end{itemize}
+
+\hypertarget{version-history}{%
+\subsection{Version History}\label{version-history}}
+
+\hypertarget{version-1.2-2025-10-16}{%
+\subsubsection{Version 1.2 (2025-10-16)}\label{version-1.2-2025-10-16}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Fixed:} Multi-affiliation support now works correctly in all
+  styles
+\item
+  \textbf{Fixed:} Key-value parser now handles comma-separated
+  affiliation lists properly
+\item
+  \textbf{Fixed:} Footnote style now uses
+  \texttt{\textbackslash{}footnotetext} with proper placement
+\item
+  \textbf{Added:} Clickable hyperlinks in footnote style markers
+\item
+  \textbf{Added:} \texttt{debug} option for comprehensive
+  troubleshooting
+\item
+  \textbf{Added:} Affiliation order tracking for consistent output
+\item
+  \textbf{Improved:} Block style now groups authors by affiliation
+  combinations
+\item
+  \textbf{Improved:} Better handling of multiple affiliations per author
+\end{itemize}
+
+\hypertarget{version-1.0-2025-10-15}{%
+\subsubsection{Version 1.0 (2025-10-15)}\label{version-1.0-2025-10-15}}
+
+\begin{itemize}
+\tightlist
+\item
+  Initial release
+\item
+  Inline and block styles
+\item
+  Multiple marker types (numeric, alphabetic, symbolic)
+\item
+  ORCID integration with clickable links
+\item
+  Automatic duplicate label handling
+\item
+  Hyperlink support with optional backlinks
+\end{itemize}
+
+\hypertarget{contributing}{%
+\subsection{Contributing}\label{contributing}}
+
+Report bugs and request features at the package repository.
+
+\hypertarget{license}{%
+\subsection{License}\label{license}}
+
+This package is released under the LaTeX Project Public License v1.3c or
+later.
+
+\hypertarget{author}{%
+\subsection{Author}\label{author}}
+
+Srikanth Mohankumar
+
+For support, please use the issue tracker or consult the debug output
+with \texttt{debug=true} enabled.
+
+\end{document}
